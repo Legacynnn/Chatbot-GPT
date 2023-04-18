@@ -28,7 +28,7 @@ type Chat struct {
 	Config                *ChatConfig
 }
 
-func newChat(userID string, initialSystemMessage *Message, chatConfig *ChatConfig) (*Chat, error) {
+func NewChat(userID string, initialSystemMessage *Message, chatConfig *ChatConfig) (*Chat, error) {
 	chat := &Chat{
 		ID:                    uuid.New().String(),
 		UserID:                userID,
