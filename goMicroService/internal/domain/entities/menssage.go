@@ -4,8 +4,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/google/uuid"
 	tiktoken_go "github.com/j178/tiktoken-go"
+
+	"github.com/google/uuid"
 )
 
 type Message struct {
@@ -27,11 +28,9 @@ func NewMessage(role, content string, model *Model) (*Message, error) {
 		Model:     model,
 		CreatedAt: time.Now(),
 	}
-
 	if err := msg.Validate(); err != nil {
 		return nil, err
 	}
-
 	return msg, nil
 }
 
@@ -43,7 +42,7 @@ func (m *Message) Validate() error {
 		return errors.New("content is empty")
 	}
 	if m.CreatedAt.IsZero() {
-		return errors.New("invalid created_At")
+		return errors.New("invalid created at")
 	}
 	return nil
 }
