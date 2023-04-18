@@ -2,6 +2,8 @@ package entities
 
 import (
 	"errors"
+
+	"github.com/google/uuid"
 )
 
 type ChatConfig struct {
@@ -24,6 +26,23 @@ type Chat struct {
 	Status                string
 	TokenUsage            int
 	Config                *ChatConfig
+}
+
+func newChat(userID string, initialSystemMessage *Message, chatConfig *ChatConfig) (*Chat, error) {
+	chat := &Chat{
+		ID:                    uuid.New().String(),
+		UserID:                userID,
+		InitialSystemMenssage: initialSystemMessage,
+		Status:                "active",
+		Config:                chatConfig,
+		TokenUsage:            0,
+	}
+	chat.AddMessage(initialSystemMessage)
+
+	if err := chat.Validate(); err != nil {
+		return nil, err
+	}
+	return chat, nil
 }
 
 func (c *Chat) Validate() error {
