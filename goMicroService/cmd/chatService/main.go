@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 
+	_ "github.com/go-sql-driver/mysql"
+
 	"github.com/Legacynnn/Chatbot-GPT/goMicroService/configs"
 	"github.com/Legacynnn/Chatbot-GPT/goMicroService/internal/infra/repositories"
 	"github.com/Legacynnn/Chatbot-GPT/goMicroService/internal/infra/web"
