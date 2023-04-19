@@ -10,11 +10,11 @@ import (
 
 type WebChatGPTHandler struct {
 	CompletionUseCase completion.ChatCompletionUseCase
-	Config            completion.ChatCompletionInputDTO
+	Config            completion.ChatCompletionConfigInputDTO
 	AuthToken         string
 }
 
-func NewWebChatGPTHandler(usecase completion.ChatCompletionUseCase, config completion.ChatCompletionInputDTO, authtoken string) *WebChatGPTHandler {
+func NewWebChatGPTHandler(usecase completion.ChatCompletionUseCase, config completion.ChatCompletionConfigInputDTO, authtoken string) *WebChatGPTHandler {
 	return &WebChatGPTHandler{
 		CompletionUseCase: usecase,
 		Config:            config,
@@ -50,7 +50,7 @@ func (h *WebChatGPTHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	dto.Config = h.Config.Config
+	dto.Config = h.Config
 
 	result, err := h.CompletionUseCase.Execute(r.Context(), dto)
 	if err != nil {
