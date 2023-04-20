@@ -8,15 +8,15 @@ import (
 
 type ChatService struct {
 	pb.UnimplementedChatServiceServer
-	ChatCompletionStreamUseCase completion.ChatCompletionUseCase
-	ChatConfigStream            completion.ChatCompletionConfigInputDTO
-	StreamChannel               chan completion.ChatCompletionOutputDTO
+	ChatCompletionStreamUseCase completionstream.ChatCompletionUseCase
+	ChatConfigStream            completionstream.ChatCompletionConfigInputDTO
+	StreamChannel               chan completionstream.ChatCompletionOutputDTO
 }
 
-func NewChatService(chatCompletionStreamUseCase completion.ChatCompletionUseCase, chatConfigStream completion.ChatCompletionConfigInputDTO, streamChannel chan completion.ChatCompletionOutputDTO) *ChatService {
+func NewChatService(chatCompletionStreamUseCase completionstream.ChatCompletionUseCase, chatConfigStream completion.ChatCompletionConfigInputDTO, streamChannel chan completionstream.ChatCompletionOutputDTO) *ChatService {
 	return &ChatService{
 		ChatCompletionStreamUseCase: chatCompletionStreamUseCase,
-		ChatConfigStream:            chatConfigStream,
+		ChatConfigStream:            completionstream.ChatCompletionConfigInputDTO(chatConfigStream),
 		StreamChannel:               streamChannel,
 	}
 }
@@ -33,12 +33,12 @@ func (c *ChatService) ChatStream(req *pb.ChatRequest, stream pb.ChatService_Chat
 		InitialSystemMessage: c.ChatConfigStream.InitialSystemMessage,
 	}
 	// If error in stream, put completionStream
-	input := completion.ChatCompletionInputDTO{
+	input := completionstream.ChatCompletionInputDTO{
 		UserMessage: req.GetUserMessage(),
 		UserID:      req.GetUserId(),
 		ChatID:      req.GetChatId(),
 		// If have error in stream, back in this
-		Config: completion.ChatCompletionConfigInputDTO(chatConfig),
+		Config: chatConfig,
 	}
 
 	ctx := stream.Context()
