@@ -2,18 +2,17 @@ package service
 
 import (
 	"github.com/Legacynnn/Chatbot-GPT/goMicroService/internal/infra/grpc/pb"
-	"github.com/Legacynnn/Chatbot-GPT/goMicroService/internal/useCases/chat/completion"
-	completionstream "github.com/Legacynnn/Chatbot-GPT/goMicroService/internal/useCases/chat/completionStream"
+	chatcompletionstream "github.com/Legacynnn/Chatbot-GPT/goMicroService/internal/useCases/chat/completionStream"
 )
 
 type ChatService struct {
 	pb.UnimplementedChatServiceServer
-	ChatCompletionStreamUseCase completion.ChatCompletionUseCase
-	ChatConfigStream            completion.ChatCompletionConfigInputDTO
-	StreamChannel               chan completion.ChatCompletionOutputDTO
+	ChatCompletionStreamUseCase chatcompletionstream.ChatCompletionUseCase
+	ChatConfigStream            chatcompletionstream.ChatCompletionConfigInputDTO
+	StreamChannel               chan chatcompletionstream.ChatCompletionOutputDTO
 }
 
-func NewChatService(chatCompletionStreamUseCase completion.ChatCompletionUseCase, chatConfigStream completion.ChatCompletionConfigInputDTO, streamChannel chan completion.ChatCompletionOutputDTO) *ChatService {
+func NewChatService(chatCompletionStreamUseCase chatcompletionstream.ChatCompletionUseCase, chatConfigStream chatcompletionstream.ChatCompletionConfigInputDTO, streamChannel chan chatcompletionstream.ChatCompletionOutputDTO) *ChatService {
 	return &ChatService{
 		ChatCompletionStreamUseCase: chatCompletionStreamUseCase,
 		ChatConfigStream:            chatConfigStream,
@@ -22,7 +21,7 @@ func NewChatService(chatCompletionStreamUseCase completion.ChatCompletionUseCase
 }
 
 func (c *ChatService) ChatStream(req *pb.ChatRequest, stream pb.ChatService_ChatStreamServer) error {
-	chatConfig := completionstream.ChatCompletionConfigInputDTO{
+	chatConfig := chatcompletionstream.ChatCompletionConfigInputDTO{
 		Model:                c.ChatConfigStream.Model,
 		ModelMaxTokens:       c.ChatConfigStream.ModelMaxTokens,
 		Temperature:          c.ChatConfigStream.Temperature,
@@ -33,12 +32,12 @@ func (c *ChatService) ChatStream(req *pb.ChatRequest, stream pb.ChatService_Chat
 		InitialSystemMessage: c.ChatConfigStream.InitialSystemMessage,
 	}
 	// If error in stream, put completionStream
-	input := completion.ChatCompletionInputDTO{
+	input := chatcompletionstream.ChatCompletionInputDTO{
 		UserMessage: req.GetUserMessage(),
 		UserID:      req.GetUserId(),
 		ChatID:      req.GetChatId(),
 		// If have error in stream, back in this
-		Config: completion.ChatCompletionConfigInputDTO(chatConfig),
+		Config: chatConfig,
 	}
 
 	ctx := stream.Context()

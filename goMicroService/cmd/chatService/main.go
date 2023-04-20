@@ -12,6 +12,7 @@ import (
 	"github.com/Legacynnn/Chatbot-GPT/goMicroService/internal/infra/web"
 	"github.com/Legacynnn/Chatbot-GPT/goMicroService/internal/infra/web/webservice"
 	"github.com/Legacynnn/Chatbot-GPT/goMicroService/internal/useCases/chat/completion"
+	chatcompletionstream "github.com/Legacynnn/Chatbot-GPT/goMicroService/internal/useCases/chat/completionStream"
 	"github.com/sashabaranov/go-openai"
 )
 
@@ -41,7 +42,7 @@ func main() {
 		InitialSystemMessage: configs.InitialChatMessage,
 	}
 
-	chatConfigStream := completion.ChatCompletionConfigInputDTO{
+	chatConfigStream := chatcompletionstream.ChatCompletionConfigInputDTO{
 		Model:                configs.Model,
 		ModelMaxTokens:       configs.ModelMaxTokens,
 		Temperature:          float32(configs.Temperature),
@@ -54,8 +55,8 @@ func main() {
 
 	usecase := completion.NewChatCompletionUseCase(repo, client)
 
-	streamChannel := make(chan completion.ChatCompletionOutputDTO)
-	usecaseStream := completion.NewChatCompletionUseCase(repo, client)
+	streamChannel := make(chan chatcompletionstream.ChatCompletionOutputDTO)
+	usecaseStream := chatcompletionstream.NewChatCompletionUseCase(repo, client, streamChannel)
 
 	fmt.Println("Starting gRPC server on port " + configs.GRPCServerPort)
 	grpcServer := server.NewGRPCServer(
