@@ -7,6 +7,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/Legacynnn/Chatbot-GPT/goMicroService/configs"
+	"github.com/Legacynnn/Chatbot-GPT/goMicroService/internal/infra/grpc/server"
 	"github.com/Legacynnn/Chatbot-GPT/goMicroService/internal/infra/repositories"
 	"github.com/Legacynnn/Chatbot-GPT/goMicroService/internal/infra/web"
 	"github.com/Legacynnn/Chatbot-GPT/goMicroService/internal/infra/web/webservice"
@@ -40,7 +41,7 @@ func main() {
 		InitialSystemMessage: configs.InitialChatMessage,
 	}
 
-	/* chatConfigStream := completion.ChatCompletionConfigInputDTO{
+	chatConfigStream := completion.ChatCompletionConfigInputDTO{
 		Model:                configs.Model,
 		ModelMaxTokens:       configs.ModelMaxTokens,
 		Temperature:          float32(configs.Temperature),
@@ -49,12 +50,22 @@ func main() {
 		Stop:                 configs.Stop,
 		MaxTokens:            configs.MaxTokens,
 		InitialSystemMessage: configs.InitialChatMessage,
-	} */
+	}
 
 	usecase := completion.NewChatCompletionUseCase(repo, client)
 
-	/* streamChannel := make(chan completion.ChatCompletionOutputDTO)
-	usecaseStream := completion.NewChatCompletionUseCase(repo, client, streamChannel) */
+	streamChannel := make(chan completion.ChatCompletionOutputDTO)
+	usecaseStream := completion.NewChatCompletionUseCase(repo, client)
+
+	fmt.Println("Starting gRPC server on port " + configs.GRPCServerPort)
+	grpcServer := server.NewGRPCServer(
+		*usecaseStream,
+		chatConfigStream,
+		configs.GRPCServerPort,
+		configs.AuthToken,
+		streamChannel,
+	)
+	go grpcServer.Start()
 
 	webserver := webservice.NewWebServer(":" + configs.WebServerPort)
 	webserverChatHandler := web.NewWebChatGPTHandler(*usecase, chatConfig, configs.AuthToken)

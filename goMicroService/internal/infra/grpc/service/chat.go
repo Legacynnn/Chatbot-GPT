@@ -32,11 +32,13 @@ func (c *ChatService) ChatStream(req *pb.ChatRequest, stream pb.ChatService_Chat
 		MaxTokens:            c.ChatConfigStream.MaxTokens,
 		InitialSystemMessage: c.ChatConfigStream.InitialSystemMessage,
 	}
-	input := completionstream.ChatCompletionInputDTO{
+	// If error in stream, put completionStream
+	input := completion.ChatCompletionInputDTO{
 		UserMessage: req.GetUserMessage(),
 		UserID:      req.GetUserId(),
 		ChatID:      req.GetChatId(),
-		Config:      chatConfig,
+		// If have error in stream, back in this
+		Config: completion.ChatCompletionConfigInputDTO(chatConfig),
 	}
 
 	ctx := stream.Context()
