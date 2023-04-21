@@ -3,7 +3,7 @@ import { ChatServiceClient as GrpcChatServiceClient } from './rpc/pb/ChatService
 export class ChatServiceClient {
   constructor(private chatClient: GrpcChatServiceClient) {}
 
-  chatStream(data: { chat_id: string; user_id: string; message: string }) {
+  chatStream(data: { chat_id?: string; user_id: string; message: string }) {
     const stream = this.chatClient.chatStream({
       chatId: data.chat_id,
       userId: data.user_id,
@@ -18,6 +18,7 @@ export class ChatServiceClient {
     stream.on('end', () => {
       console.log('end')
     })
+    return stream
   }
 }
 
