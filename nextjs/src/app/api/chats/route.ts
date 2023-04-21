@@ -2,7 +2,7 @@ import { prisma } from '@/app/prisma/prisma'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
-  const body = request.json()
+  const body = await request.json()
   const chatCreated = await prisma.chat.create({
     data: {
       messages: {
@@ -10,6 +10,10 @@ export async function POST(request: NextRequest) {
           content: body.message,
         },
       },
+    },
+    select: {
+      id: true,
+      messages: true,
     },
   })
 
