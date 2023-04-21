@@ -5,8 +5,7 @@ import (
 
 	"github.com/Legacynnn/Chatbot-GPT/goMicroService/internal/infra/grpc/pb"
 	"github.com/Legacynnn/Chatbot-GPT/goMicroService/internal/infra/grpc/service"
-	"github.com/Legacynnn/Chatbot-GPT/goMicroService/internal/useCases/chat/completion"
-	completionstream "github.com/Legacynnn/Chatbot-GPT/goMicroService/internal/useCases/chat/completionStream"
+	chatcompletionstream "github.com/Legacynnn/Chatbot-GPT/goMicroService/internal/useCases/chat/completionStream"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -15,19 +14,19 @@ import (
 )
 
 type GRPCServer struct {
-	ChatCompletionStreamUseCase completionstream.ChatCompletionUseCase
-	ChatConfigStream            completionstream.ChatCompletionConfigInputDTO
+	ChatCompletionStreamUseCase chatcompletionstream.ChatCompletionUseCase
+	ChatConfigStream            chatcompletionstream.ChatCompletionConfigInputDTO
 	ChatService                 service.ChatService
 	Port                        string
 	AuthToken                   string
-	StreamChannel               chan completionstream.ChatCompletionOutputDTO
+	StreamChannel               chan chatcompletionstream.ChatCompletionOutputDTO
 }
 
-func NewGRPCServer(chatCompletionStreamUseCase completionstream.ChatCompletionUseCase, chatConfigStream completion.ChatCompletionConfigInputDTO, port, authToken string, streamChannel chan completionstream.ChatCompletionOutputDTO) *GRPCServer {
+func NewGRPCServer(chatCompletionStreamUseCase chatcompletionstream.ChatCompletionUseCase, chatConfigStream chatcompletionstream.ChatCompletionConfigInputDTO, port, authToken string, streamChannel chan chatcompletionstream.ChatCompletionOutputDTO) *GRPCServer {
 	chatService := service.NewChatService(chatCompletionStreamUseCase, chatConfigStream, streamChannel)
 	return &GRPCServer{
 		ChatCompletionStreamUseCase: chatCompletionStreamUseCase,
-		ChatConfigStream:            completionstream.ChatCompletionConfigInputDTO(chatConfigStream),
+		ChatConfigStream:            chatConfigStream,
 		Port:                        port,
 		AuthToken:                   authToken,
 		StreamChannel:               streamChannel,
